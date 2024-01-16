@@ -1,10 +1,12 @@
 const User = require('../models/user');
 const { ServerError, NotFoundUser, BadRequestErrorUser } = require('../utils/errors');
 
+const OK = 200;
+const CREATED = 201;
 const getUser = (req, res) => {
   User
     .find()
-    .then((users) => res.status(200).send(users))
+    .then((users) => res.status(OK).send(users))
     .catch(() => res.status(ServerError.status).send({ message: ServerError.message }));
 };
 const getUserById = (req, res) => {
@@ -14,7 +16,7 @@ const getUserById = (req, res) => {
       if (!user) {
         return res.status(NotFoundUser.status).send({ message: NotFoundUser.message });
       }
-      return res.status(200).send(user);
+      return res.status(OK).send(user);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
@@ -29,7 +31,7 @@ const getUserById = (req, res) => {
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(CREATED).send(user))
     .catch((error) => {
       if (error.name === 'ValidationError') {
         return res
@@ -43,7 +45,7 @@ const editUserInfo = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true, new: true })
     .then((user) => {
-      res.status(200).send(user);
+      res.status(OK).send(user);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
@@ -64,7 +66,7 @@ const editUserAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true, new: true })
     .then((user) => {
-      res.status(200).send(user);
+      res.status(OK).send(user);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
