@@ -5,9 +5,9 @@ const cardSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Поле должно быть заполнено'],
       minlength: [2, 'Минимальная длина поля 2 символа'],
       maxlength: [30, 'Максимальная длина поля 30 символов'],
+      required: [true, 'Поле должно быть заполнено'],
     },
     link: {
       type: String,
@@ -22,11 +22,13 @@ const cardSchema = new mongoose.Schema(
       ref: 'user',
       default: [],
     },
-    likes: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
-      default: [],
-    },
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        default: [],
+      },
+    ],
     createdAt: {
       type: Date,
       default: Date.now,
