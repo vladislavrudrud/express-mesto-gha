@@ -27,7 +27,7 @@ module.exports = {
   ServerError,
   BadRequestErrorUser,
   NotFoundUser,
-  NotFoundCard,
   BadRequestErrorCard,
+  NotFoundCard,
   NotFound,
 };
