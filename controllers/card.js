@@ -1,12 +1,11 @@
 const Card = require('../models/card');
+const { OK, CREATED } = require('../utils/constants');
 const {
   ServerError,
   BadRequestErrorCard,
   NotFoundCard,
 } = require('../utils/errors');
 
-const OK = 200;
-const CREATED = 201;
 const getCards = (req, res) => {
   Card.find()
     .then((cards) => res.status(OK).send(cards))
@@ -38,7 +37,7 @@ const deleteCard = (req, res) => {
       return res.status(OK).send({ card });
     })
     .catch((error) => {
-      if (error.name === 'CastError' && 'ValidationError') {
+      if (error.name === 'CastError') {
         return res
           .status(BadRequestErrorCard.status)
           .send({ message: BadRequestErrorCard.message });
