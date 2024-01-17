@@ -1,30 +1,28 @@
 const User = require('../models/user');
 const { OK, CREATED } = require('../utils/constants');
-const { ServerError, NotFoundUser, BadRequestErrorUser } = require('../utils/errors');
+const { ServerError, NotFound, BadRequestError } = require('../utils/errors');
 
 const getUser = (req, res) => {
   User
     .find()
     .then((users) => res.status(OK).send(users))
-    .catch(() => res.status(ServerError.status).send({ message: ServerError.message }));
+    .catch(() => res.status(ServerError).send({ message: 'Cервер не может обработать запрос к сайту!' }));
 };
 const getUserById = (req, res) => {
   const { idUser } = req.params;
   User.findById(idUser)
     .then((user) => {
       if (!user) {
-        return res.status(NotFoundUser.status).send({ message: NotFoundUser.message });
+        return res.status(NotFound).send({ message: 'Пользователь не найден!' });
       }
       return res.status(OK).send(user);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
         return res
-          .status(BadRequestErrorUser.status)
-          .send({ message: BadRequestErrorUser.message });
-      } if (error.message === 'notVadidId') {
-        res.status(NotFoundUser.status).send({ message: NotFoundUser.message });
-      } return res.status(ServerError.status).send({ message: ServerError.message });
+          .status(BadRequestError)
+          .send({ message: 'Некорректный запрос серверу при работе с пользователем!' });
+      } return res.status(ServerError).send({ message: 'Cервер не может обработать запрос к сайту!' });
     });
 };
 const createUser = (req, res) => {
@@ -34,10 +32,10 @@ const createUser = (req, res) => {
     .catch((error) => {
       if (error.name === 'ValidationError') {
         return res
-          .status(BadRequestErrorUser.status)
-          .send({ message: BadRequestErrorUser.message });
+          .status(BadRequestError)
+          .send({ message: 'Некорректный запрос серверу при работе с пользователем!' });
       }
-      return res.status(ServerError.status).send({ message: ServerError.message });
+      return res.status(ServerError).send({ message: 'Cервер не может обработать запрос к сайту!' });
     });
 };
 const editUserInfo = (req, res) => {
@@ -49,16 +47,11 @@ const editUserInfo = (req, res) => {
     .catch((error) => {
       if (error.name === 'ValidationError') {
         return res
-          .status(BadRequestErrorUser.status)
-          .send({ message: BadRequestErrorUser.message });
-      } if (error.message === 'notValidId') {
-        return res
-          .status(NotFoundUser.status)
-          .send({ message: NotFoundUser.message });
-      }
-      return res
-        .status(ServerError.status)
-        .send({ message: ServerError.message });
+          .status(BadRequestError)
+          .send({ message: 'Некорректный запрос серверу при работе с пользователем!' });
+      } return res
+        .status(ServerError)
+        .send({ message: 'Cервер не может обработать запрос к сайту!' });
     });
 };
 const editUserAvatar = (req, res) => {
@@ -70,16 +63,11 @@ const editUserAvatar = (req, res) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         return res
-          .status(BadRequestErrorUser.status)
-          .send({ message: BadRequestErrorUser.message });
-      } if (error.message === 'notValidId') {
-        return res
-          .status(NotFoundUser.status)
-          .send({ message: NotFoundUser.message });
-      }
-      return res
-        .status(ServerError.status)
-        .send({ message: ServerError.message });
+          .status(BadRequestError)
+          .send({ message: 'Некорректный запрос серверу при работе с пользователем!' });
+      } return res
+        .status(ServerError)
+        .send({ message: 'Cервер не может обработать запрос к сайту!' });
     });
 };
 

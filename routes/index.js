@@ -8,8 +8,8 @@ router.use('/users', userRouter);
 router.use('/cards', cardRouter);
 router.all('/*', (req, res) => {
   res
-    .status(NotFound.status)
-    .send({ message: NotFound.message });
+    .status(NotFound)
+    .send({ message: 'Не найдено!' });
 });
 
 module.exports = { router };

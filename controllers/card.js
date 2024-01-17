@@ -2,14 +2,14 @@ const Card = require('../models/card');
 const { OK, CREATED } = require('../utils/constants');
 const {
   ServerError,
-  BadRequestErrorCard,
-  NotFoundCard,
+  BadRequestError,
+  NotFound,
 } = require('../utils/errors');
 
 const getCards = (req, res) => {
   Card.find()
     .then((cards) => res.status(OK).send(cards))
-    .catch(() => res.status(ServerError.status).send({ message: ServerError.message }));
+    .catch(() => res.status(ServerError).send({ message: 'Cервер не может обработать запрос к сайту!' }));
 };
 const createCard = (req, res) => {
   const { name, link } = req.body;
@@ -18,12 +18,12 @@ const createCard = (req, res) => {
     .catch((error) => {
       if (error.name === 'ValidationError') {
         return res
-          .status(BadRequestErrorCard.status)
-          .send({ message: BadRequestErrorCard.message });
+          .status(BadRequestError)
+          .send({ message: 'Некорректный запрос серверу при работе с публикацией!' });
       }
       return res
-        .status(ServerError.status)
-        .send({ message: ServerError.message });
+        .status(ServerError)
+        .send({ message: 'Cервер не может обработать запрос к сайту!' });
     });
 };
 const deleteCard = (req, res) => {
@@ -31,20 +31,20 @@ const deleteCard = (req, res) => {
     .then((card) => {
       if (!card) {
         return res
-          .status(NotFoundCard.status)
-          .send({ message: NotFoundCard.message });
+          .status(NotFound)
+          .send({ message: 'Публикация не найдена!' });
       }
       return res.status(OK).send({ card });
     })
     .catch((error) => {
       if (error.name === 'CastError') {
         return res
-          .status(BadRequestErrorCard.status)
-          .send({ message: BadRequestErrorCard.message });
+          .status(BadRequestError)
+          .send({ message: 'Некорректный запрос серверу при работе с публикацией!' });
       }
       return res
-        .status(ServerError.status)
-        .send({ message: ServerError.message });
+        .status(ServerError)
+        .send({ message: 'Cервер не может обработать запрос к сайту!' });
     });
 };
 const likeCard = (req, res) => {
@@ -56,25 +56,19 @@ const likeCard = (req, res) => {
     .then((card) => {
       if (!card) {
         return res
-          .status(NotFoundCard.status)
-          .send({ message: NotFoundCard.message });
+          .status(NotFound)
+          .send({ message: 'Публикация не найдена!' });
       }
       return res.status(OK).send({ card });
     })
     .catch((error) => {
       if (error.name === 'CastError') {
         return res
-          .status(BadRequestErrorCard.status)
-          .send({ message: BadRequestErrorCard.message });
-      }
-      if (error.message === 'notValidId') {
-        res
-          .status(NotFoundCard.status)
-          .send({ message: NotFoundCard.message });
-      }
-      return res
-        .status(ServerError.status)
-        .send({ message: ServerError.message });
+          .status(BadRequestError)
+          .send({ message: 'Некорректный запрос серверу при работе с публикацией!' });
+      } return res
+        .status(ServerError)
+        .send({ message: 'Cервер не может обработать запрос к сайту!' });
     });
 };
 const dislikeCard = (req, res) => {
@@ -86,20 +80,20 @@ const dislikeCard = (req, res) => {
     .then((card) => {
       if (!card) {
         return res
-          .status(NotFoundCard.status)
-          .send({ message: NotFoundCard.message });
+          .status(NotFound)
+          .send({ message: 'Публикация не найдена!' });
       }
       return res.status(OK).send({ card });
     })
     .catch((error) => {
-      if (error.name === 'ValidationError') {
+      if (error.name === 'CastError') {
         return res
-          .status(BadRequestErrorCard.status)
-          .send({ message: BadRequestErrorCard.message });
+          .status(BadRequestError)
+          .send({ message: 'Некорректный запрос серверу при работе с публикацией!' });
       }
       return res
-        .status(BadRequestErrorCard.status)
-        .send({ message: BadRequestErrorCard.message });
+        .status(ServerError)
+        .send({ message: 'Не найдено!' });
     });
 };
 
