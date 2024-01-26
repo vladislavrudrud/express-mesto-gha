@@ -24,8 +24,10 @@ const userSchema = new mongoose.Schema(
       default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
       required: [true, 'Поле должно быть заполнено'],
       validate: {
-        validator: (v) => validator.isURL(v),
-        message: 'Введите адрес ссылки',
+        validator(url) {
+          return /https?:\/\/(www\.)?[a-z0-9.-]{2,}\.[a-z]{2,}\/?[-._~:/?#[\]@!$&'()*+,;=]*/.test(url);
+        },
+        message: 'Неверные данные!',
       },
     },
     email: {

@@ -10,7 +10,7 @@ const getCards = (req, res, next) => {
       if (!cards) {
         throw new NotFoundError('Публикации не найдены!');
       }
-      return res.status(OK).send(cards);
+      return res.send(cards);
     })
     .catch(next);
 };
@@ -18,7 +18,7 @@ const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
-    .then((card) => res.status(CREATED).send({ card }))
+    .then((card) => res.status(CREATED).send(card))
     .catch((error) => {
       if (error.name === 'ValidationError') {
         next(new BadRequestError('Ошибка при создании публикации!'));
@@ -29,19 +29,21 @@ const createCard = (req, res, next) => {
 };
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
-    .orFail(new Error('Ошибка при выполнении операции'))
+    .orFail(new Error('NotFound'))
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Публикацию удалить невозможно!');
       } else {
         Card.deleteOne(card)
-          .then(() => res.status(OK).send('Публикация удалена!'))
+          .then(() => res.send({ message: 'Публикация удалена!' }))
           .catch(next);
       }
     })
     .catch((error) => {
       if (error.name === 'CastError') {
         next(new BadRequestError('Ошибка! Идентификатор недопустим!'));
+      } else if (error.message === 'NotFound') {
+        next(new NotFoundError('Публикации не найдены!'));
       } else {
         next(error);
       }
@@ -53,7 +55,7 @@ const likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(new Error('Ошибка при выполнении операции'))
+    .orFail(new Error('NotFound'))
     .then((card) => res.status(OK).send(card))
     .catch((error) => {
       if (error.name === 'CastError') {
@@ -71,8 +73,8 @@ const dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(new Error('Ошибка при выполнении операции'))
-    .then((card) => res.status(OK).send(card))
+    .orFail(new Error('NotFound'))
+    .then((card) => res.send(card))
     .catch((error) => {
       if (error.name === 'CastError') {
         next(new BadRequestError('Ошибка! Идентификатор недопустим!'));
