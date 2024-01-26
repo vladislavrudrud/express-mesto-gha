@@ -1,15 +1,21 @@
 const { Router } = require('express');
 const { userRouter } = require('./users');
 const { cardRouter } = require('./cards');
-const { NotFound } = require('../utils/errors');
+const { signInRouter } = require('./signin');
+const { signUpRouter } = require('./signup');
+const authMiddleware = require('../middlewares/auth');
+const NotFoundError = require('../utils/notfounderror');
 
 const router = Router();
 router.use('/users', userRouter);
 router.use('/cards', cardRouter);
+router.use('/signin', signInRouter);
+router.use('/signup', signUpRouter);
+router.use(authMiddleware);
 router.all('/*', (req, res) => {
   res
-    .status(NotFound)
+    .status(NotFoundError)
     .send({ message: 'Не найдено!' });
 });
 
-module.exports = { router };
+module.exports = router;

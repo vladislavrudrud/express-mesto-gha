@@ -1,99 +1,86 @@
 const Card = require('../models/card');
-const { OK, CREATED } = require('../utils/constants');
-const {
-  ServerError,
-  BadRequestError,
-  NotFound,
-} = require('../utils/errors');
+const { CREATED, OK } = require('../utils/constants');
+const NotFoundError = require('../utils/notfounderror');
+const BadRequestError = require('../utils/badrequesterror');
+const ForbiddenError = require('../utils/forbiddenerror');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find()
-    .then((cards) => res.status(OK).send(cards))
-    .catch(() => res.status(ServerError).send({ message: 'Cервер не может обработать запрос к сайту!' }));
+    .then((cards) => {
+      if (!cards) {
+        throw new NotFoundError('Публикации не найдены!');
+      }
+      return res.status(OK).send(cards);
+    })
+    .catch(next);
 };
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
-  Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.status(CREATED).send({ _id: card._id }))
+  const owner = req.user._id;
+  Card.create({ name, link, owner })
+    .then((card) => res.status(CREATED).send({ card }))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        return res
-          .status(BadRequestError)
-          .send({ message: 'Некорректный запрос серверу при работе с публикацией!' });
+        next(new BadRequestError('Ошибка при создании публикации!'));
+      } else {
+        next(error);
       }
-      return res
-        .status(ServerError)
-        .send({ message: 'Cервер не может обработать запрос к сайту!' });
     });
 };
-const deleteCard = (req, res) => {
-  Card.findByIdAndDelete(req.params.cardId)
+const deleteCard = (req, res, next) => {
+  Card.findById(req.params.cardId)
+    .orFail(new Error('Ошибка при выполнении операции'))
     .then((card) => {
-      if (!card) {
-        return res
-          .status(NotFound)
-          .send({ message: 'Публикация не найдена!' });
+      if (card.owner.toString() !== req.user._id) {
+        throw new ForbiddenError('Публикацию удалить невозможно!');
+      } else {
+        Card.deleteOne(card)
+          .then(() => res.status(OK).send('Публикация удалена!'))
+          .catch(next);
       }
-      return res.status(OK).send({ card });
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        return res
-          .status(BadRequestError)
-          .send({ message: 'Некорректный запрос серверу при работе с публикацией!' });
+        next(new BadRequestError('Ошибка! Идентификатор недопустим!'));
+      } else {
+        next(error);
       }
-      return res
-        .status(ServerError)
-        .send({ message: 'Cервер не может обработать запрос к сайту!' });
     });
 };
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => {
-      if (!card) {
-        return res
-          .status(NotFound)
-          .send({ message: 'Публикация не найдена!' });
-      }
-      return res.status(OK).send({ card });
-    })
+    .orFail(new Error('Ошибка при выполнении операции'))
+    .then((card) => res.status(OK).send(card))
     .catch((error) => {
       if (error.name === 'CastError') {
-        return res
-          .status(BadRequestError)
-          .send({ message: 'Некорректный запрос серверу при работе с публикацией!' });
-      } return res
-        .status(ServerError)
-        .send({ message: 'Cервер не может обработать запрос к сайту!' });
+        next(new BadRequestError('Ошибка! Идентификатор недопустим!'));
+      } else if (error.message === 'NotFound') {
+        next(new NotFoundError('Публикации не найдены!'));
+      } else {
+        next(error);
+      }
     });
 };
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => {
-      if (!card) {
-        return res
-          .status(NotFound)
-          .send({ message: 'Публикация не найдена!' });
-      }
-      return res.status(OK).send({ card });
-    })
+    .orFail(new Error('Ошибка при выполнении операции'))
+    .then((card) => res.status(OK).send(card))
     .catch((error) => {
       if (error.name === 'CastError') {
-        return res
-          .status(BadRequestError)
-          .send({ message: 'Некорректный запрос серверу при работе с публикацией!' });
+        next(new BadRequestError('Ошибка! Идентификатор недопустим!'));
+      } else if (error.message === 'NotFound') {
+        next(new NotFoundError('Публикации не найдены!'));
+      } else {
+        next(error);
       }
-      return res
-        .status(ServerError)
-        .send({ message: 'Не найдено!' });
     });
 };
 
