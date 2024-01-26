@@ -6,11 +6,11 @@ const signInRouter = require('./signin');
 const signUpRouter = require('./signup');
 // const NotFoundError = require('../utils/notfounderror');
 
+router.use('/signup', signUpRouter);
+router.use('/signin', signInRouter);
+router.use(authMiddleware);
 router.use('/users', userRouter);
 router.use('/cards', cardRouter);
-router.use(authMiddleware);
-router.use('/signin', signInRouter);
-router.use('/signup', signUpRouter);
 // router.all('/*', (req, res) => {
 //   res
 //     .status(NotFoundError)

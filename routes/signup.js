@@ -14,4 +14,4 @@ router.post('/', celebrate({
   }),
 }), createUser);
 
-module.exports = { router };
+module.exports = router;

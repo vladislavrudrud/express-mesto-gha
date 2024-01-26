@@ -33,4 +33,4 @@ router.delete('/:cardId', celebrate({
   }),
 }), dislikeCard);
 
-module.exports = { router };
+module.exports = router;

@@ -11,8 +11,8 @@ const {
 } = require('../controllers/users');
 const { REGEX } = require('../utils/constants');
 
-router.get('/me', getUserInfo);
 router.get('/', getUser);
+router.get('/me', getUserInfo);
 router.get('/:idUser', celebrate({
   params: Joi.object().keys({
     idUser: Joi.string().length(24).hex().required(),
@@ -30,4 +30,4 @@ router.patch('/me/avatar', celebrate({
   }),
 }), editUserAvatar);
 
-module.exports = { router };
+module.exports = router;
