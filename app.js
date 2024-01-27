@@ -10,7 +10,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 const { PORT = 3000, MONGO_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
-mongoose.connect(`${MONGO_URL}`)
+mongoose.connect(MONGO_URL)
   .then(() => console.log('Подключено'))
   .catch(() => console.log('Не подключено'));
 app.use('/', require('./routes/index'));
