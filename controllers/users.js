@@ -25,7 +25,7 @@ const createUser = (req, res, next) => {
       if (error.code === 11000) {
         next(new ConflictError('Ошибка! Данные уже используются!'));
       } else if (error.name === 'ValidationError') {
-        next(new BadRequestError(error.mesage));
+        next(new BadRequestError(error.message));
       } else {
         next(error);
       }
