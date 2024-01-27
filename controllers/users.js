@@ -6,25 +6,6 @@ const ConflictError = require('../utils/conflicterror');
 const BadRequestError = require('../utils/badrequesterror');
 const NotFoundError = require('../utils/notfounderror');
 
-const getUser = (req, res, next) => {
-  User.find({})
-    .then((users) => res.send(users))
-    .catch(next);
-};
-const getUserById = (req, res, next) => {
-  User.findById(req.params.idUser)
-    .orFail(new Error('NotFound'))
-    .then((user) => res.send(user))
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        next(new BadRequestError('Ошибка! Идентификатор недопустим!'));
-      } else if (error.message === 'NotFound') {
-        next(new NotFoundError('Пользователь не найден!'));
-      } else {
-        next(error);
-      }
-    });
-};
 const createUser = (req, res, next) => {
   const {
     name,
@@ -45,6 +26,25 @@ const createUser = (req, res, next) => {
         next(new ConflictError('Ошибка! Данные уже используются!'));
       } else if (error.name === 'ValidationError') {
         next(new BadRequestError(error.mesage));
+      } else {
+        next(error);
+      }
+    });
+};
+const getUser = (req, res, next) => {
+  User.find({})
+    .then((users) => res.send(users))
+    .catch(next);
+};
+const getUserById = (req, res, next) => {
+  User.findById(req.params.idUser)
+    .orFail(new Error('NotFound'))
+    .then((user) => res.send(user))
+    .catch((error) => {
+      if (error.name === 'CastError') {
+        next(new BadRequestError('Ошибка! Идентификатор недопустим!'));
+      } else if (error.message === 'NotFound') {
+        next(new NotFoundError('Пользователь не найден!'));
       } else {
         next(error);
       }
