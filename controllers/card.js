@@ -12,7 +12,7 @@ const getCards = (req, res, next) => {
       }
       return res.send(cards);
     })
-    .catch(next);
+    .catch((error) => next(error));
 };
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
@@ -36,7 +36,7 @@ const deleteCard = (req, res, next) => {
       } else {
         Card.deleteOne(card)
           .then(() => res.send({ message: 'Публикация удалена!' }))
-          .catch(next);
+          .catch((error) => next(error));
       }
     })
     .catch((error) => {

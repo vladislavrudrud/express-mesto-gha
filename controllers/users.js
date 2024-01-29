@@ -13,12 +13,12 @@ const login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.send({ token });
     })
-    .catch(next);
+    .catch((error) => next(error));
 };
 const getUser = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(next);
+    .catch((error) => next(error));
 };
 const getUserById = (req, res, next) => {
   User.findById(req.params.idUser)
@@ -92,7 +92,7 @@ const editUserAvatar = (req, res, next) => {
 const getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => res.send(user))
-    .catch(next);
+    .catch((error) => next(error));
 };
 
 module.exports = {
