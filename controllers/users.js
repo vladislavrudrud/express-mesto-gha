@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const CREATED = require('../utils/constants');
-const ConflictError = require('../utils/conflicterror');
+// const ConflictError = require('../utils/conflicterror');
 const BadRequestError = require('../utils/badrequesterror');
 const NotFoundError = require('../utils/notfounderror');
 
@@ -17,8 +17,13 @@ const login = (req, res, next) => {
 };
 const getUser = (req, res, next) => {
   User.find({})
-    .then((users) => res.send(users))
-    .catch((error) => next(error));
+    .then((users) => {
+      if (!users) {
+        throw new NotFoundError('Пользователь не найден!');
+      }
+      return res.send(users);
+    })
+    .catch(next);
 };
 const getUserById = (req, res, next) => {
   User.findById(req.params.idUser)
@@ -42,22 +47,23 @@ const createUser = (req, res, next) => {
     email,
     password,
   } = req.body;
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
-    }))
-    .then((user) => res.status(CREATED).send({
-      _id: user._id, name: user.name, about: user.about, avatar: user.avatar, email: user.email,
-    }))
-    .catch((error) => {
-      if (error.code === 11000) {
-        next(new ConflictError('Ошибка! Данные уже используются!'));
-      } else if (error.name === 'ValidationError') {
-        next(new BadRequestError(error.message));
-      } else {
-        next(error);
-      }
-    });
+  bcrypt.hash(password, 10).then((hash) => {
+    User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    })
+      .then((user) => res.status(CREATED).send({
+        _id: user._id,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      }))
+      .catch((err) => next(err));
+  });
 };
 const editUserInfo = (req, res, next) => {
   const { name, about } = req.body;
