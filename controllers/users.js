@@ -1,11 +1,20 @@
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const CREATED = require('../utils/constants');
 const ConflictError = require('../utils/conflicterror');
 const BadRequestError = require('../utils/badrequesterror');
 const NotFoundError = require('../utils/notfounderror');
 
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.send({ token });
+    })
+    .catch(next);
+};
 const getUser = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
@@ -37,9 +46,11 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.status(CREATED).send({
-      name: user.name, about: user.about, avatar: user.avatar, email: user.email, _id: user._id,
-    }))
+    .then((user) => {
+      const UserDeletePassword = user.toObject();
+      delete UserDeletePassword.password;
+      res.status(CREATED).send({ data: UserDeletePassword });
+    })
     .catch((error) => {
       if (error.code === 11000) {
         next(new ConflictError('Ошибка! Данные уже используются!'));
@@ -83,15 +94,6 @@ const editUserAvatar = (req, res, next) => {
 const getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => res.send(user))
-    .catch(next);
-};
-const login = (req, res, next) => {
-  const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      res.send({ token });
-    })
     .catch(next);
 };
 
