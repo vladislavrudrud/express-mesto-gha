@@ -1,6 +1,5 @@
 const router = require('express').Router();
-const { Joi } = require('celebrate');
-const { celebrate } = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
 const { createUser } = require('../controllers/users');
 const { REGEX } = require('../utils/constants');
 
