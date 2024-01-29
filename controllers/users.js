@@ -43,21 +43,24 @@ const createUser = (req, res, next) => {
     password,
   } = req.body;
   bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
-    }))
-    .then((user) => res.status(CREATED).send({
-      _id: user._id, name: user.name, about: user.about, avatar: user.avatar, email: user.email,
-    }))
-    .catch((error) => {
-      if (error.code === 11000) {
-        next(new ConflictError('Ошибка! Данные уже используются!'));
-      } else if (error.name === 'ValidationError') {
-        next(new BadRequestError(error.message));
-      } else {
-        next(error);
-      }
-    });
+    .then((hash) => {
+      User.create({
+        name, about, avatar, email, password: hash,
+      })
+        .then((user) => res.status(CREATED).send({
+          _id: user._id, name: user.name, about: user.about, avatar: user.avatar, email: user.email,
+        }))
+        .catch((error) => {
+          if (error.code === 11000) {
+            next(new ConflictError('Ошибка! Данные уже используются!'));
+          } else if (error.name === 'ValidationError') {
+            next(new BadRequestError(error.message));
+          } else {
+            next(error);
+          }
+        });
+    })
+    .catch((error) => next(error));
 };
 const editUserInfo = (req, res, next) => {
   const { name, about } = req.body;
