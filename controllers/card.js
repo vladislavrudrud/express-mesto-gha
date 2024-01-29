@@ -28,7 +28,6 @@ const createCard = (req, res, next) => {
 };
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
-    .orFail(new Error('NotFound'))
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Публикации не найдены!');
