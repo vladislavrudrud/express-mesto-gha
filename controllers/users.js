@@ -46,11 +46,9 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => {
-      const UserDeletePassword = user.toObject();
-      delete UserDeletePassword.password;
-      res.status(CREATED).send({ data: UserDeletePassword });
-    })
+    .then((user) => res.status(CREATED).send({
+      _id: user._id, name: user.name, about: user.about, avatar: user.avatar, email: user.email,
+    }))
     .catch((error) => {
       if (error.code === 11000) {
         next(new ConflictError('Ошибка! Данные уже используются!'));
