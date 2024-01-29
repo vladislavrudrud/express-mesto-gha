@@ -1,7 +1,6 @@
-// const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-const validator = require('validator');
-// const UnauthorizedError = require('../utils/unauthorized');
+const isEmail = require('validator/lib/isEmail');
+const { REGEX } = require('../utils/constants');
 
 const userSchema = new mongoose.Schema(
   {
@@ -21,19 +20,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
       validate: {
-        validator(url) {
-          return /https?:\/\/(www\.)?[a-z0-9.-]{2,}\.[a-z]{2,}\/?[-._~:/?#[\]@!$&'()*+,;=]*/.test(url);
-        },
+        validator: (url) => REGEX.test(url),
         message: 'Неверные данные!',
-      },
-    },
-    email: {
-      type: String,
-      required: [true, 'Поле должно быть заполнено'],
-      unique: true,
-      validate: {
-        validator: (email) => validator.isEmail(email),
-        message: 'Введите адрес ссылки',
       },
     },
     password: {
@@ -41,8 +29,16 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Поле должно быть заполнено'],
       select: false,
     },
+    email: {
+      type: String,
+      required: [true, 'Поле должно быть заполнено'],
+      unique: true,
+      validate: {
+        validator: (url) => isEmail(url),
+        message: 'Введите адрес ссылки',
+      },
+    },
   },
-  { versionKey: false },
 );
 
 module.exports = mongoose.model('user', userSchema);
