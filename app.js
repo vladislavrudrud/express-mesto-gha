@@ -5,7 +5,7 @@ const helmet = require('helmet');
 const { celebrate, Joi, errors } = require('celebrate');
 const router = require('./routes');
 const { createUser, login } = require('./controllers/users');
-const auth = require('./middlewares/auth');
+const authMiddleware = require('./middlewares/auth');
 const { REGEX } = require('./utils/constants');
 const InternalServerError = require('./utils/internalservererror');
 
@@ -32,7 +32,7 @@ app.post('/signin', celebrate({
   }),
 }), login);
 
-app.use(auth);
+app.use(authMiddleware);
 app.use(router);
 app.use(errors());
 

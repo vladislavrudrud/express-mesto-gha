@@ -10,7 +10,7 @@ const getCards = (req, res, next) => {
       if (!cards) {
         throw new NotFoundError('Публикации не найдены!');
       }
-      return res.send(cards);
+      return res.status(OK).send(cards);
     })
     .catch(next);
 };
@@ -58,7 +58,7 @@ const likeCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('Публикации не найдены!');
       }
-      return res.send(card);
+      return res.status(OK).send(card);
     })
     .catch(next);
 };
@@ -72,7 +72,7 @@ const dislikeCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('Публикации не найдены!');
       }
-      return res.send(card);
+      return res.status(OK).send(card);
     })
     .catch(next);
 };
