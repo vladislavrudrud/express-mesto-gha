@@ -5,7 +5,7 @@ const ConflictError = require('../utils/conflicterror');
 const BadRequestError = require('../utils/badrequesterror');
 const NotFoundError = require('../utils/notfounderror');
 const UnauthorizedError = require('../utils/unauthorized');
-const { CREATED } = require('../utils/constants');
+const { CREATED, OK } = require('../utils/constants');
 
 const getUser = (req, res, next) => {
   User.find({})
@@ -13,7 +13,7 @@ const getUser = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователи не найдены.');
       }
-      return res.send(user);
+      return res.status(OK).send(user);
     })
     .catch(next);
 };
@@ -57,7 +57,7 @@ const getUserById = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден!');
       }
-      return res.send(user);
+      return res.status(OK).send(user);
     })
     .catch(next);
 };
@@ -69,7 +69,7 @@ const editUserInfo = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден!');
       }
-      return res.send(user);
+      return res.status(OK).send(user);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
@@ -87,7 +87,7 @@ const editUserAvatar = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден!');
       }
-      return res.send(user);
+      return res.status(OK).send(user);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
@@ -103,7 +103,7 @@ const getUserInfo = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден.');
       }
-      return res.send(user);
+      return res.status(OK).send(user);
     })
     .catch(next);
 };
@@ -120,7 +120,7 @@ const login = (req, res, next) => {
             return next(new UnauthorizedError('Неверные данные!'));
           }
           const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-          return res.send({ token });
+          return res.status(OK).send({ token });
         });
     })
     .catch(next);

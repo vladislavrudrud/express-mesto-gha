@@ -10,11 +10,3 @@ const InternalServerError = ((error, req, res, next) => {
 });
 
 module.exports = InternalServerError;
-// const InternalServerError = (error, req, res, next) => {
-//   const errorCode = error.statusCode || 500;
-//   const errorMsg = error.message || 'Internal Server Error';
-//   res.status(errorCode).send({ message: errorMsg });
-//   next();
-// };
-
-// module.exports = InternalServerError;

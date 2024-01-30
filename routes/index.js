@@ -7,7 +7,7 @@ const router = express.Router();
 router.use('/users', userRouter);
 router.use('/cards', cardRouter);
 router.use((req, res, next) => {
-  next(new NotFoundError('Такого адреса не существует.'));
+  next(new NotFoundError('Не найдено!'));
 });
 
 module.exports = router;
