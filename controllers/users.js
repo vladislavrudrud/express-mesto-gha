@@ -33,11 +33,11 @@ const createUser = (req, res, next) => {
       email,
       password: hash,
     })
-      .then((newUser) => res.status(CREATED).send({
-        name: newUser.name,
-        about: newUser.about,
-        avatar: newUser.avatar,
-        email: newUser.email,
+      .then((user) => res.status(CREATED).send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
       }))
       .catch((error) => {
         if (error.code === 11000) {

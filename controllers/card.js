@@ -33,7 +33,7 @@ const deleteCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('Публикации не найдены!');
       }
-      if (!card.owner.equals(req.user._id)) {
+      if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Публикацию удалить невозможно!');
       }
       card.deleteOne()
