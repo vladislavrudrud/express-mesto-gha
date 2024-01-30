@@ -12,4 +12,4 @@ router.use(auth);
 router.use('/users', userRouter);
 router.use('/cards', cardRouter);
 
-module.exports = router;
+module.exports = { router };
