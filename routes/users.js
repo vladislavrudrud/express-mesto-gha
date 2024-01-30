@@ -21,12 +21,12 @@ userRouter.patch('/me/avatar', celebrate({
     avatar: Joi.string().regex(REGEX),
   }),
 }), editUserAvatar);
+userRouter.get('/me', getUserInfo);
 userRouter.get('/:userId', celebrate({
   params: Joi.object().keys({
     userId: Joi.string().length(24).hex().required(),
   }),
 }), getUserById);
-userRouter.get('/me', getUserInfo);
 userRouter.get('/', getUser);
 
 module.exports = userRouter;
