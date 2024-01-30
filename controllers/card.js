@@ -42,8 +42,6 @@ const deleteCard = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         next(new BadRequestError('Ошибка! Идентификатор недопустим!'));
-      } else if (error.message === 'NotFound') {
-        next(new NotFoundError('Публикации не найдены!'));
       } else {
         next(error);
       }
