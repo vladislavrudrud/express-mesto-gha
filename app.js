@@ -44,5 +44,5 @@ mongoose.connect(`${MONGO_URL}`)
   .catch(() => console.log('Не подключено'));
 
 app.listen(PORT, () => {
-  console.log('This server is start on 3000');
+  console.log('Сервер запущен на 3000 порту');
 });

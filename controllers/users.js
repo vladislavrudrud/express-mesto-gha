@@ -11,7 +11,7 @@ const getUser = (req, res, next) => {
   User.find({})
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователи не найдены.');
+        throw new NotFoundError('Пользователь не найден.');
       }
       return res.status(OK).send(user);
     })
