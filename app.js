@@ -44,8 +44,11 @@ app.use((req, res, next) => {
 
 app.use(InternalServerError);
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+const { PORT = 3000, MONGO_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
+mongoose.connect(`${MONGO_URL}`)
+  .then(() => console.log('Подключено'))
+  .catch(() => console.log('Не подключено'));
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
   console.log('This server is start on 3000');
 });
