@@ -9,11 +9,13 @@ const NotFoundError = require('./utils/notfounderror');
 
 const app = express();
 
+app.use(express.json());
+
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(router);
+app.use('/', router);
 
 app.use(errors());
 
