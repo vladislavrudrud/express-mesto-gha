@@ -1,5 +1,6 @@
 const cardRouter = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
+const { Joi } = require('celebrate');
+const { celebrate } = require('celebrate');
 const {
   getCards,
   createCard,
