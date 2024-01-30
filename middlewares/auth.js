@@ -4,14 +4,14 @@ const UnauthorizedError = require('../utils/unauthorized');
 const authMiddleware = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return next(new UnauthorizedError('Ошибка при авторизации!'));
+    return next(new UnauthorizedError('Ошибка!'));
   }
   const token = authorization.replace('Bearer ', '');
   let payload;
   try {
     payload = jwt.verify(token, 'some-secret-key');
   } catch (error) {
-    return next(new UnauthorizedError('Ошибка при авторизации!'));
+    return next(new UnauthorizedError('Ошибка!'));
   }
   req.user = payload;
   return next();

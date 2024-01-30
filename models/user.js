@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-// const isEmail = require('validator/lib/isEmail');
 const validator = require('validator');
 const { REGEX } = require('../utils/constants');
 

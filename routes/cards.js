@@ -22,15 +22,15 @@ cardRouter.delete('/:cardId', celebrate({
     cardId: Joi.string().length(24).hex().required(),
   }),
 }), deleteCard);
-cardRouter.delete('/:cardId/likes', celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().length(24).hex().required(),
-  }),
-}), dislikeCard);
 cardRouter.put('/:cardId/likes', celebrate({
   params: Joi.object().keys({
     cardId: Joi.string().length(24).hex().required(),
   }),
 }), likeCard);
+cardRouter.delete('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().length(24).hex().required(),
+  }),
+}), dislikeCard);
 
 module.exports = cardRouter;
