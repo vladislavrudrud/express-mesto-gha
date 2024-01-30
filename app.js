@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
-const router = require('./routes');
+// const router = require('./routes');
 const InternalServerError = require('./utils/internalservererror');
 const NotFoundError = require('./utils/notfounderror');
 
@@ -13,7 +13,7 @@ app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(router);
+app.use('/', require('./routes/index'));
 
 app.use(errors());
 
