@@ -9,7 +9,7 @@ const authMiddleware = (req, res, next) => {
   const token = authorization.replace('Bearer ', '');
   let payload;
   try {
-    payload = jwt.verify(token, 'super-secret-key');
+    payload = jwt.verify(token, 'some-secret-key');
   } catch (error) {
     return next(new UnauthorizedError('Ошибка с авторизацией!'));
   }

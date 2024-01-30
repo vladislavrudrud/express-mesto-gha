@@ -5,6 +5,7 @@ const ConflictError = require('../utils/conflicterror');
 const BadRequestError = require('../utils/badrequesterror');
 const NotFoundError = require('../utils/notfounderror');
 const UnauthorizedError = require('../utils/unauthorized');
+const { CREATED } = require('../utils/constants');
 
 const getUser = (req, res, next) => {
   User.find({})
@@ -32,7 +33,7 @@ const createUser = (req, res, next) => {
       email,
       password: hash,
     })
-      .then((newUser) => res.status(201).send({
+      .then((newUser) => res.status(CREATED).send({
         name: newUser.name,
         about: newUser.about,
         avatar: newUser.avatar,
@@ -42,7 +43,7 @@ const createUser = (req, res, next) => {
         if (error.code === 11000) {
           next(new ConflictError('Ошибка! Данные уже используются!'));
         } else if (error.name === 'ValidationError') {
-          next(new BadRequestError('Некорректные данные при создании пользователя.'));
+          next(new BadRequestError(error.message));
         } else {
           next(error);
         }
@@ -50,29 +51,11 @@ const createUser = (req, res, next) => {
   })
     .catch(next);
 };
-const login = (req, res, next) => {
-  const { email, password } = req.body;
-  User.findOne({ email }).select('+password')
-    .then((user) => {
-      if (!user) {
-        throw new UnauthorizedError('Пользователь не найден.');
-      }
-      return bcrypt.compare(password, user.password)
-        .then((matched) => {
-          if (!matched) {
-            return next(new UnauthorizedError('Не правильно указан логин или пароль.'));
-          }
-          const token = jwt.sign({ _id: user._id }, 'super-secret-key', { expiresIn: '7d' });
-          return res.send({ token });
-        });
-    })
-    .catch(next);
-};
 const getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Информация о пользователе не найдена.');
+        throw new NotFoundError('Пользователь не найден!');
       }
       return res.send(user);
     })
@@ -81,17 +64,16 @@ const getUserById = (req, res, next) => {
 const editUserInfo = (req, res, next) => {
   const { _id } = req.user;
   const { name, about } = req.body;
-
   User.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Информация о пользователе не найдена.');
+        throw new NotFoundError('Пользователь не найден!');
       }
       return res.send(user);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        next(new BadRequestError('Некорректные данные при редактировании профиля.'));
+        next(new BadRequestError('Неверные данные!'));
       } else {
         next(error);
       }
@@ -103,13 +85,13 @@ const editUserAvatar = (req, res, next) => {
   User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Информация о пользователе не найдена.');
+        throw new NotFoundError('Пользователь не найден!');
       }
       return res.send(user);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        next(new BadRequestError('Некорректные данные при обновлении аватара.'));
+        next(new BadRequestError('Неверные данные!'));
       } else {
         next(error);
       }
@@ -125,13 +107,31 @@ const getUserInfo = (req, res, next) => {
     })
     .catch(next);
 };
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+  User.findOne({ email }).select('+password')
+    .then((user) => {
+      if (!user) {
+        throw new UnauthorizedError('Пользователь не найден!');
+      }
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            return next(new UnauthorizedError('Неверные данные!'));
+          }
+          const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+          return res.send({ token });
+        });
+    })
+    .catch(next);
+};
 
 module.exports = {
   getUser,
-  login,
   getUserById,
   createUser,
   editUserInfo,
   editUserAvatar,
+  login,
   getUserInfo,
 };
