@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       validate: {
         validator: (email) => validator.isEmail(email),
-        message: 'Введите адрес ссылки',
+        message: 'Неверные данные!',
       },
     },
     password: {

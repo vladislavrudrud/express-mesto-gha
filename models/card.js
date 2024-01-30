@@ -14,7 +14,7 @@ const cardSchema = new mongoose.Schema(
       required: [true, 'Поле должно быть заполнено'],
       validate: {
         validator: (link) => validator.isURL(link),
-        message: 'Некорректный URL-адрес.',
+        message: 'Неверные данные!',
       },
     },
     owner: {

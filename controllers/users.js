@@ -9,11 +9,11 @@ const { CREATED } = require('../utils/constants');
 
 const getUser = (req, res, next) => {
   User.find({})
-    .then((users) => {
-      if (!users) {
+    .then((user) => {
+      if (!user) {
         throw new NotFoundError('Пользователи не найдены.');
       }
-      return res.send(users);
+      return res.send(user);
     })
     .catch(next);
 };
