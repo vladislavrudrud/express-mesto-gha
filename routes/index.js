@@ -6,10 +6,8 @@ const NotFoundError = require('../utils/notfounderror');
 const router = express.Router();
 router.use('/users', userRouter);
 router.use('/cards', cardRouter);
-router.all('/*', (req, res) => {
-  res
-    .status(NotFoundError)
-    .send({ message: 'Не найдено!' });
+router.all((req, res, next) => {
+  next(new NotFoundError('Такого адреса не существует.'));
 });
 
 module.exports = router;
