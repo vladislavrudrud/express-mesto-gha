@@ -5,16 +5,21 @@ const helmet = require('helmet');
 const { celebrate, Joi, errors } = require('celebrate');
 const router = require('./routes');
 const { createUser, login } = require('./controllers/users');
+const cors = require('cors');
 const authMiddleware = require('./middlewares/auth');
 const { REGEX } = require('./utils/constants');
 const InternalServerError = require('./utils/internalservererror');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
+
+app.use(cors());
 
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(requestLogger);
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
@@ -34,6 +39,7 @@ app.post('/signin', celebrate({
 
 app.use(authMiddleware);
 app.use(router);
+app.use(errorLogger);
 app.use(errors());
 
 app.use(InternalServerError);
