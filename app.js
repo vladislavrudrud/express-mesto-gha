@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const { celebrate, Joi, errors } = require('celebrate');
 const router = require('./routes');
 const { createUser, login } = require('./controllers/users');
-const cors = require('./middlewares/cors');
+const cors = require('cors');
 const authMiddleware = require('./middlewares/auth');
 const { REGEX } = require('./utils/constants');
 const InternalServerError = require('./utils/internalservererror');
@@ -16,12 +16,13 @@ const { PORT = 3000, MONGO_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process
 
 const app = express();
 
+app.use(cors());
+
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(requestLogger);
-app.use(cors);
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
