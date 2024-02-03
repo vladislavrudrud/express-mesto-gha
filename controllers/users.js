@@ -1,3 +1,4 @@
+require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -6,6 +7,8 @@ const BadRequestError = require('../utils/badrequesterror');
 const NotFoundError = require('../utils/notfounderror');
 const UnauthorizedError = require('../utils/unauthorized');
 const { CREATED, OK } = require('../utils/constants');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 const getUser = (req, res, next) => {
   User.find({})
@@ -69,7 +72,7 @@ const editUserInfo = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден!');
       }
-      return res.status(OK).send(user);
+      return res.send(user);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
@@ -87,7 +90,7 @@ const editUserAvatar = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден!');
       }
-      return res.status(OK).send(user);
+      return res.send(user);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
@@ -103,7 +106,7 @@ const getUserInfo = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден.');
       }
-      return res.status(OK).send(user);
+      return res.send(user);
     })
     .catch(next);
 };
@@ -119,8 +122,13 @@ const login = (req, res, next) => {
           if (!matched) {
             return next(new UnauthorizedError('Неверные данные!'));
           }
-          const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-          return res.status(OK).send({ token });
+          const token = jwt.sign(
+            { _id: user._id },
+
+            NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+            { expiresIn: '7d' }
+          );
+          return res.send({ token });
         });
     })
     .catch(next);
